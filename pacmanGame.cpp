@@ -426,6 +426,8 @@ void display(void);
 
 char *carrega_bmp();
 
+bool colideVilao(int posicaoX, int posicaoY);
+
 //bool wallColide2(int posicaoX, int posicaoY);
 
 GLuint texid1;
@@ -1992,11 +1994,18 @@ void specialInputDoTeclado(int key, int x, int y) {
     switch(key){
         case GLUT_KEY_UP:
             if(CIMA){
+
+                if (colideVilao(c_x, c_y+5)){
+                    stopGame();
+                }
+
                 if (!wallColide(c_x, c_y+5)){
                     c_y += 5;
                     // glutIdleFunc(spinDisplay);
                     comeuComida();
                 }
+
+               
 
                 glutPostRedisplay();
             }
@@ -2006,12 +2015,18 @@ void specialInputDoTeclado(int key, int x, int y) {
         case GLUT_KEY_DOWN:
             if(BAIXO){
 
+                if (colideVilao(c_x, c_y-5)){
+                    stopGame();
+                }
+
                 bool colide = wallColide(c_x, c_y-5);
                 if (!colide){
                    c_y -= 5;
                 //    glutIdleFunc(spinDisplay);
                    comeuComida();
                 }
+
+                
                 // printf("colisão: %s ;Pacman andou  X : %i ;    Y : %i \n", colide ? "true" : "false", c_x, c_y);
                 glutPostRedisplay();
             }
@@ -2020,6 +2035,9 @@ void specialInputDoTeclado(int key, int x, int y) {
     
         case GLUT_KEY_LEFT:
             if(LADO_ESQUERDO){
+                if (colideVilao(c_x-5, c_y)){
+                    stopGame();
+                }
                 if (!wallColide(c_x-5, c_y)){
                     c_x -= 5;
                     // glutIdleFunc(spinDisplay);
@@ -2033,6 +2051,9 @@ void specialInputDoTeclado(int key, int x, int y) {
     
         case GLUT_KEY_RIGHT:
             if(LADO_DIREITO){
+                if (colideVilao(c_x+5, c_y)){
+                    stopGame();
+                }
                 if (!wallColide(c_x+5, c_y)){
                     c_x += 5;
                     // glutIdleFunc(spinDisplay);
@@ -2061,6 +2082,19 @@ void stopGame(){
     LADO_ESQUERDO       =   false;
     c_x                 =   200;
     c_y                 =   680;
+
+    for (int i = 0; i < 78; i++){
+    
+        vetorQuadrados[i].setStatus(true);
+    
+    }
+
+    CIMA                =   true;
+    BAIXO               =   true;
+    LADO_DIREITO        =   true;
+    LADO_ESQUERDO       =   true;
+
+
 }
 
 
@@ -2117,6 +2151,23 @@ bool wallColide(int posicaoX, int posicaoY){
         }
     }
     return col;
+}
+
+bool colideVilao(int posicaoX, int posicaoY){
+
+    int auxiliarCoordX = cv_X;
+    int auxiliarCoordY = cv_Y;
+    bool colisao = false;
+
+    bool colisaoEmX = posicaoX + 80 >= auxiliarCoordX && auxiliarCoordX + ((cv_X + 80) - cv_X) >= posicaoX;
+    bool colisaoEmY = posicaoY + 80 >= auxiliarCoordY && auxiliarCoordY + ((cv_Y + 80) - cv_Y) >= posicaoY;
+
+    if (colisaoEmX && colisaoEmY){
+        colisao = true;
+    }
+
+    return colisao;
+    
 }
 
 void comeuComida(){
