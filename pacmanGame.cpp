@@ -16,7 +16,11 @@
 
 #include <glm/gtx/transform.hpp>
 
+#include </home/daniela/Documents/OpenGL/3AV/irrklang/include/irrKlang.h>
 
+using namespace irrklang;
+
+#pragma comment(lib, "irrKlang.lib")
 
 static GLfloat spin = 0.0;
 
@@ -27,6 +31,8 @@ static int raio     = 4;
 
 static int cv_X     = 800;
 static int cv_Y     = 580;
+
+ISoundEngine* engine;
 
 // glm::vec2 position [2] = {200,680};
 
@@ -463,8 +469,11 @@ int main(int argc, char ** argv) {
     glutInitWindowPosition (100, 100);
 
     glutCreateWindow("PACMAN GAME");
+    engine = createIrrKlangDevice();
 
     init();
+
+    engine->play2D("pacman_chomp.wav");
 
 
     // viuDani();
@@ -2082,6 +2091,7 @@ void stopGame(){
     LADO_ESQUERDO       =   false;
     c_x                 =   200;
     c_y                 =   680;
+    // engine->play2D("pacman_chomp.wav",false);
 
     for (int i = 0; i < 78; i++){
     
