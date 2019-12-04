@@ -1,6 +1,7 @@
 # PacmanGameOpenGL
 
+## Running Pacman Gane
+
 ```console
-foo@bar:~$ whoami
-foo
+foo@bar:~$ make && ./example
 ```
