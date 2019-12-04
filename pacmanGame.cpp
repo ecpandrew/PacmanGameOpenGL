@@ -10,14 +10,14 @@
 
 #include <unistd.h>
 
-#include <glm/gtc/matrix_transform.hpp>
+// #include <glm/gtc/matrix_transform.hpp>
 
-#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
 
-#include <glm/gtx/transform.hpp>
+// #include <glm/gtx/transform.hpp>
 
 #include </home/daniela/Documents/OpenGL/3AV/irrklang/include/irrKlang.h>
-
+// #include </home/andrew/cgraf/p3/irrklang/include/irrKlang.h>
 using namespace irrklang;
 
 #pragma comment(lib, "irrKlang.lib")
@@ -25,14 +25,15 @@ using namespace irrklang;
 static GLfloat spin = 0.0;
 
 /* pacman */
-static int c_x      = 200;
-static int c_y      = 680;
-static int raio     = 4;
+static int c_x = 200;
+static int c_y = 680;
+static int raio = 4;
 
-static int cv_X     = 800;
-static int cv_Y     = 580;
+static int cv_X = 800;
+static int cv_Y = 580;
+static int delay = 40;
 
-ISoundEngine* engine;
+ISoundEngine *engine;
 
 // glm::vec2 position [2] = {200,680};
 
@@ -45,358 +46,416 @@ static GLfloat t2 = 0;
 static int angle = 0;
 static GLint anguloTotal = 360;
 
-static bool CIMA            =   true;
-static bool BAIXO           =   true;
-static bool LADO_ESQUERDO   =   true;
-static bool LADO_DIREITO    =   true;
+static bool CIMA = false;
+static bool BAIXO = false;
+static bool LADO_ESQUERDO = false;
+static bool LADO_DIREITO = false;
 
-class Pacman{
+static int percursoVilaoX[12] = {cv_X, cv_X - 40, cv_X - 80, cv_X - 120, cv_X - 160, cv_X - 200};
+static int percursoVilaoY[12] = {cv_Y, cv_Y, cv_Y, cv_Y, cv_Y, cv_Y};
+static int tamanho_vetor_vilao = 5;
+class Pacman
+{
 
-    public:
-        void setPosicaoX(float x);
-        void setPosicaoY(float y);
-        float getPosicaoX();
-        float getPosicaoY();
-        void setAnguloTeta(float teta);
-        float getAnguloTeta();
-        void setCoordenadaX(int x);
-        int getCoordenadaX();
-        void setCoordenadaY(int y);
-        int getCoordenadaY();
-        
-        
+public:
+    void setPosicaoX(float x);
+    void setPosicaoY(float y);
+    float getPosicaoX();
+    float getPosicaoY();
+    void setAnguloTeta(float teta);
+    float getAnguloTeta();
+    void setCoordenadaX(int x);
+    int getCoordenadaX();
+    void setCoordenadaY(int y);
+    int getCoordenadaY();
 
-        void setSizePacman(float x);
-        float getSizePacman();
+    void setSizePacman(float x);
+    float getSizePacman();
 
-        void setSizeOlhoPacman(float x);
-        float getSizeOlhoPacman();
-    private:
-        float x;
-        float y;
-        float teta;
-        float sizePacman;
-        float sizeOlhoPacman;
-        int coordX;
-        int coordY;
+    void setSizeOlhoPacman(float x);
+    float getSizeOlhoPacman();
+
+private:
+    float x;
+    float y;
+    float teta;
+    float sizePacman;
+    float sizeOlhoPacman;
+    int coordX;
+    int coordY;
 };
 
 //#################################### * \ Classe Quadrados Pontos / * #######################################
 
-class QuadradosPontos{
-    public:
+class QuadradosPontos
+{
+public:
+    void setPositionX1(int x1);
+    void setPositionX2(int x2);
+    void setPositionX3(int x3);
+    void setPositionX4(int x4);
+    void setPositionX5(int x5);
 
-        void setPositionX1(int x1);
-        void setPositionX2(int x2);
-        void setPositionX3(int x3);
-        void setPositionX4(int x4);
-        void setPositionX5(int x5);
+    int getPositionX1();
+    int getPositionX2();
+    int getPositionX3();
+    int getPositionX4();
+    int getPositionX5();
 
-        int getPositionX1();
-        int getPositionX2();
-        int getPositionX3();
-        int getPositionX4();
-        int getPositionX5();
+    void setPositionY1(int y1);
+    void setPositionY2(int y2);
+    void setPositionY3(int y3);
+    void setPositionY4(int y4);
+    void setPositionY5(int y5);
 
-        void setPositionY1(int y1);
-        void setPositionY2(int y2);
-        void setPositionY3(int y3);
-        void setPositionY4(int y4);
-        void setPositionY5(int y5);
+    int getPositionY1();
+    int getPositionY2();
+    int getPositionY3();
+    int getPositionY4();
+    int getPositionY5();
 
-        int getPositionY1();
-        int getPositionY2();
-        int getPositionY3();
-        int getPositionY4();
-        int getPositionY5();
+    void setStatus(bool status);
+    bool getStatus();
 
-        void setStatus(bool status);
-        bool getStatus();
+private:
+    int x1;
+    int x2;
+    int x3;
+    int x4;
+    int x5;
 
-    private:
-        int x1;
-        int x2;
-        int x3;
-        int x4;
-        int x5;
+    int y1;
+    int y2;
+    int y3;
+    int y4;
+    int y5;
 
-        int y1;
-        int y2;
-        int y3;
-        int y4;
-        int y5;
-
-        bool statusComida;
+    bool statusComida;
 };
 
-void QuadradosPontos::setPositionX1(int x){
+void QuadradosPontos::setPositionX1(int x)
+{
     x1 = x;
 }
 
-void QuadradosPontos::setPositionX2(int x){
+void QuadradosPontos::setPositionX2(int x)
+{
     x2 = x;
 }
 
-void QuadradosPontos::setPositionX3(int x){
+void QuadradosPontos::setPositionX3(int x)
+{
     x3 = x;
 }
 
-void QuadradosPontos::setPositionX4(int x){
+void QuadradosPontos::setPositionX4(int x)
+{
     x4 = x;
 }
 
-void QuadradosPontos::setPositionX5(int x){
+void QuadradosPontos::setPositionX5(int x)
+{
     x5 = x;
 }
 
-int QuadradosPontos::getPositionX1(){
+int QuadradosPontos::getPositionX1()
+{
     return x1;
 }
 
-int QuadradosPontos::getPositionX2(){
+int QuadradosPontos::getPositionX2()
+{
     return x2;
 }
 
-int QuadradosPontos::getPositionX3(){
+int QuadradosPontos::getPositionX3()
+{
     return x3;
 }
 
-int QuadradosPontos::getPositionX4(){
+int QuadradosPontos::getPositionX4()
+{
     return x4;
 }
 
-int QuadradosPontos::getPositionX5(){
+int QuadradosPontos::getPositionX5()
+{
     return x5;
 }
 
-void QuadradosPontos::setPositionY1(int y){
+void QuadradosPontos::setPositionY1(int y)
+{
     y1 = y;
 }
 
-void QuadradosPontos::setPositionY2(int y){
+void QuadradosPontos::setPositionY2(int y)
+{
     y2 = y;
 }
 
-void QuadradosPontos::setPositionY3(int y){
+void QuadradosPontos::setPositionY3(int y)
+{
     y3 = y;
 }
 
-void QuadradosPontos::setPositionY4(int y){
+void QuadradosPontos::setPositionY4(int y)
+{
     y4 = y;
 }
 
-void QuadradosPontos::setPositionY5(int y){
+void QuadradosPontos::setPositionY5(int y)
+{
     y5 = y;
 }
 
-void QuadradosPontos::setStatus(bool status){
+void QuadradosPontos::setStatus(bool status)
+{
     statusComida = status;
 }
 
-bool QuadradosPontos::getStatus(){
+bool QuadradosPontos::getStatus()
+{
     return statusComida;
 }
 
-int QuadradosPontos::getPositionY1(){
+int QuadradosPontos::getPositionY1()
+{
     return y1;
 }
 
-int QuadradosPontos::getPositionY2(){
+int QuadradosPontos::getPositionY2()
+{
     return y2;
 }
 
-int QuadradosPontos::getPositionY3(){
+int QuadradosPontos::getPositionY3()
+{
     return y3;
 }
 
-int QuadradosPontos::getPositionY4(){
+int QuadradosPontos::getPositionY4()
+{
     return y4;
 }
 
-int QuadradosPontos::getPositionY5(){
+int QuadradosPontos::getPositionY5()
+{
     return y5;
 }
 
 //#################################### * \ Classe Paredes (Wall) / * #######################################
 
-class Wall{
+class Wall
+{
 
-    public:
+public:
+    void setPositionX1(int x1);
+    void setPositionX2(int x2);
+    void setPositionX3(int x3);
+    void setPositionX4(int x4);
+    void setPositionX5(int x5);
 
-        void setPositionX1(int x1);
-        void setPositionX2(int x2);
-        void setPositionX3(int x3);
-        void setPositionX4(int x4);
-        void setPositionX5(int x5);
+    int getPositionX1();
+    int getPositionX2();
+    int getPositionX3();
+    int getPositionX4();
+    int getPositionX5();
 
-        int getPositionX1();
-        int getPositionX2();
-        int getPositionX3();
-        int getPositionX4();
-        int getPositionX5();
+    void setPositionY1(int y1);
+    void setPositionY2(int y2);
+    void setPositionY3(int y3);
+    void setPositionY4(int y4);
+    void setPositionY5(int y5);
 
-        void setPositionY1(int y1);
-        void setPositionY2(int y2);
-        void setPositionY3(int y3);
-        void setPositionY4(int y4);
-        void setPositionY5(int y5);
+    int getPositionY1();
+    int getPositionY2();
+    int getPositionY3();
+    int getPositionY4();
+    int getPositionY5();
 
-        int getPositionY1();
-        int getPositionY2();
-        int getPositionY3();
-        int getPositionY4();
-        int getPositionY5();
+private:
+    int x1;
+    int x2;
+    int x3;
+    int x4;
+    int x5;
 
-    private:
-        int x1;
-        int x2;
-        int x3;
-        int x4;
-        int x5;
-
-        int y1;
-        int y2;
-        int y3;
-        int y4;
-        int y5;
+    int y1;
+    int y2;
+    int y3;
+    int y4;
+    int y5;
 };
 
-void Wall::setPositionX1(int x){
+void Wall::setPositionX1(int x)
+{
     x1 = x;
 }
 
-void Wall::setPositionX2(int x){
+void Wall::setPositionX2(int x)
+{
     x2 = x;
 }
 
-void Wall::setPositionX3(int x){
+void Wall::setPositionX3(int x)
+{
     x3 = x;
 }
 
-void Wall::setPositionX4(int x){
+void Wall::setPositionX4(int x)
+{
     x4 = x;
 }
 
-void Wall::setPositionX5(int x){
+void Wall::setPositionX5(int x)
+{
     x5 = x;
 }
 
-int Wall::getPositionX1(){
+int Wall::getPositionX1()
+{
     return x1;
 }
 
-int Wall::getPositionX2(){
+int Wall::getPositionX2()
+{
     return x2;
 }
 
-int Wall::getPositionX3(){
+int Wall::getPositionX3()
+{
     return x3;
 }
 
-int Wall::getPositionX4(){
+int Wall::getPositionX4()
+{
     return x4;
 }
 
-int Wall::getPositionX5(){
+int Wall::getPositionX5()
+{
     return x5;
 }
 
-void Wall::setPositionY1(int y){
+void Wall::setPositionY1(int y)
+{
     y1 = y;
 }
 
-void Wall::setPositionY2(int y){
+void Wall::setPositionY2(int y)
+{
     y2 = y;
 }
 
-void Wall::setPositionY3(int y){
+void Wall::setPositionY3(int y)
+{
     y3 = y;
 }
 
-void Wall::setPositionY4(int y){
+void Wall::setPositionY4(int y)
+{
     y4 = y;
 }
 
-void Wall::setPositionY5(int y){
+void Wall::setPositionY5(int y)
+{
     y5 = y;
 }
 
-int Wall::getPositionY1(){
+int Wall::getPositionY1()
+{
     return y1;
 }
 
-int Wall::getPositionY2(){
+int Wall::getPositionY2()
+{
     return y2;
 }
 
-int Wall::getPositionY3(){
+int Wall::getPositionY3()
+{
     return y3;
 }
 
-int Wall::getPositionY4(){
+int Wall::getPositionY4()
+{
     return y4;
 }
 
-int Wall::getPositionY5(){
+int Wall::getPositionY5()
+{
     return y5;
 }
 
-static Wall vetorParedes [12];
+static Wall vetorParedes[12];
 
-void Pacman::setPosicaoX(float posicaoX){
+void Pacman::setPosicaoX(float posicaoX)
+{
     x = posicaoX;
-}bool wallColide2(int posicaoX, int posicaoY);
+}
+bool wallColide2(int posicaoX, int posicaoY);
 
-
-float Pacman::getPosicaoX(){
+float Pacman::getPosicaoX()
+{
     return x;
 }
 
-void Pacman::setPosicaoY(float posicaoY){
+void Pacman::setPosicaoY(float posicaoY)
+{
     y = posicaoY;
 }
 
-float Pacman::getPosicaoY(){
+float Pacman::getPosicaoY()
+{
     return y;
 }
 
-void Pacman::setSizePacman(float sizeP){
+void Pacman::setSizePacman(float sizeP)
+{
     sizePacman = sizeP;
 }
 
-float Pacman::getSizePacman(){
+float Pacman::getSizePacman()
+{
     return sizePacman;
 }
 
-void Pacman::setSizeOlhoPacman(float sizeO){
+void Pacman::setSizeOlhoPacman(float sizeO)
+{
     sizeOlhoPacman = sizeO;
 }
 
-float Pacman::getSizeOlhoPacman(){
+float Pacman::getSizeOlhoPacman()
+{
     return sizeOlhoPacman;
 }
 
-void Pacman::setAnguloTeta(float angulo){
+void Pacman::setAnguloTeta(float angulo)
+{
     teta = angulo;
 }
 
-void Pacman::setCoordenadaX(int cx){
+void Pacman::setCoordenadaX(int cx)
+{
     coordX = cx;
 }
 
-int Pacman::getCoordenadaX(){
+int Pacman::getCoordenadaX()
+{
     return coordX;
 }
 
-void Pacman::setCoordenadaY(int cy){
+void Pacman::setCoordenadaY(int cy)
+{
     coordY = cy;
 }
 
-int Pacman::getCoordenadaY(){
+int Pacman::getCoordenadaY()
+{
     return coordY;
 }
 
-static QuadradosPontos vetorQuadrados [78];
+static QuadradosPontos vetorQuadrados[78];
 
 void init(void);
 
@@ -446,10 +505,12 @@ GLuint carregaTextura2();
 
 char *carrega_bmp2();
 
+void andarPacmanEVilao(int i);
+static int indice_vilao = 0;
+
 // GLuint tex
 
 int w, h = 0;
-
 
 bool wallColide(int posicaoX, int posicaoY);
 
@@ -459,23 +520,23 @@ void keyboard(unsigned char key, int x, int y);
 
 void specialInputDoTeclado(int key, int x, int y);
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv)
+{
 
     glutInit(&argc, argv);
 
-    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA);
-    
-    glutInitWindowSize (1600, 800);
-    glutInitWindowPosition (100, 100);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+
+    glutInitWindowSize(1600, 800);
+    glutInitWindowPosition(100, 100);
 
     glutCreateWindow("PACMAN GAME");
     engine = createIrrKlangDevice();
 
     init();
 
-    engine->play2D("pacman_chomp.wav");
-
-
+    // engine->play2D("pacman.wav");
+    engine->play3D("pacman.wav", vec3df(0, 0, 3), true, false, true);
     // viuDani();
     texid1 = carregaTextura();
     texid2 = carregaTextura2();
@@ -486,19 +547,21 @@ int main(int argc, char ** argv) {
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(specialInputDoTeclado);
     glutReshapeFunc(reshape);
+    glutTimerFunc(delay, andarPacmanEVilao, 1);
     glutMainLoop();
     return 0;
 }
 
-void init(void){
+void init(void)
+{
 
-    
-    glOrtho (0, 1600, 0, 800, -1 ,1);
+    glOrtho(0, 1600, 0, 800, -1, 1);
     glShadeModel(GL_FLAT);
     glClearColor(0.0, 0.0, 0.0, 1.0);
 }
 
-void iniciarMapa(){
+void iniciarMapa()
+{
     Wall wall1;
     wall1.setPositionX1(0);
     wall1.setPositionX2(1600);
@@ -655,23 +718,24 @@ void iniciarMapa(){
     wall12.setPositionY4(560);
     wall12.setPositionY5(320);
 
-    vetorParedes[0]     =   wall1;
-    vetorParedes[1]     =   wall2;
-    vetorParedes[2]     =   wall3;
-    vetorParedes[3]     =   wall4;
-    vetorParedes[4]     =   wall5; //essa aqui
-    vetorParedes[5]     =   wall6; //essa aqui
-    vetorParedes[6]     =   wall7; //essa aqui
-    vetorParedes[7]     =   wall8;
-    vetorParedes[8]     =   wall9;
-    vetorParedes[9]     =   wall10;
-    vetorParedes[10]    =   wall11;
-    vetorParedes[11]    =   wall12;
+    vetorParedes[0] = wall1;
+    vetorParedes[1] = wall2;
+    vetorParedes[2] = wall3;
+    vetorParedes[3] = wall4;
+    vetorParedes[4] = wall5; //essa aqui
+    vetorParedes[5] = wall6; //essa aqui
+    vetorParedes[6] = wall7; //essa aqui
+    vetorParedes[7] = wall8;
+    vetorParedes[8] = wall9;
+    vetorParedes[9] = wall10;
+    vetorParedes[10] = wall11;
+    vetorParedes[11] = wall12;
 }
 
-void iniciarQuadrados(){
+void iniciarQuadrados()
+{
 
-    QuadradosPontos quad1; 
+    QuadradosPontos quad1;
     quad1.setPositionX1(100);
     quad1.setPositionX2(100);
     quad1.setPositionX3(120);
@@ -683,7 +747,7 @@ void iniciarQuadrados(){
     quad1.setPositionY3(580);
     quad1.setPositionY4(600);
     quad1.setPositionY5(600);
-    
+
     QuadradosPontos quad2;
     quad2.setPositionX1(100);
     quad2.setPositionX2(100);
@@ -1686,113 +1750,118 @@ void iniciarQuadrados(){
     quad78.setPositionY5(690);
 
     // vetorQuadrados[0]   =   quad1;
-    vetorQuadrados[1]   =   quad2;
-    vetorQuadrados[2]   =   quad3;
-    vetorQuadrados[3]   =   quad4;
-    vetorQuadrados[4]   =   quad5;
-    vetorQuadrados[5]   =   quad6;
-    vetorQuadrados[6]   =   quad7;
-    vetorQuadrados[7]   =   quad8;
-    vetorQuadrados[8]   =   quad9;
-    vetorQuadrados[9]   =   quad10;
-    vetorQuadrados[10]  =   quad11;
-    vetorQuadrados[11]  =   quad12;
-    vetorQuadrados[12]  =   quad13;
-    vetorQuadrados[13]  =   quad14;
-    vetorQuadrados[14]  =   quad15;
-    vetorQuadrados[15]  =   quad16;
-    vetorQuadrados[16]  =   quad17;
-    vetorQuadrados[17]  =   quad18;
-    vetorQuadrados[18]  =   quad19;
-    vetorQuadrados[19]  =   quad20;
-    vetorQuadrados[20]  =   quad21;
-    vetorQuadrados[21]  =   quad22;
-    vetorQuadrados[22]  =   quad23;
-    vetorQuadrados[23]  =   quad24;
-    vetorQuadrados[24]  =   quad25;
-    vetorQuadrados[25]  =   quad26;
-    vetorQuadrados[26]  =   quad27;
-    vetorQuadrados[27]  =   quad28;
-    vetorQuadrados[28]  =   quad29;
-    vetorQuadrados[29]  =   quad30;
-    vetorQuadrados[30]  =   quad31;
-    vetorQuadrados[31]  =   quad32;
-    vetorQuadrados[32]  =   quad33;
-    vetorQuadrados[33]  =   quad34;
-    vetorQuadrados[34]  =   quad35;
-    vetorQuadrados[35]  =   quad36;
-    vetorQuadrados[36]  =   quad37;
-    vetorQuadrados[37]  =   quad38;
-    vetorQuadrados[38]  =   quad39;
-    vetorQuadrados[39]  =   quad40;
-    vetorQuadrados[40]  =   quad41;
-    vetorQuadrados[41]  =   quad42;
-    vetorQuadrados[42]  =   quad43;
-    vetorQuadrados[43]  =   quad44;
-    vetorQuadrados[44]  =   quad45;
-    vetorQuadrados[45]  =   quad46;
-    vetorQuadrados[46]  =   quad47;
-    vetorQuadrados[47]  =   quad48;
-    vetorQuadrados[48]  =   quad49;
-    vetorQuadrados[49]  =   quad50;
-    vetorQuadrados[50]  =   quad51;
-    vetorQuadrados[51]  =   quad52;
-    vetorQuadrados[52]  =   quad53;
-    vetorQuadrados[53]  =   quad54;
-    vetorQuadrados[54]  =   quad55;
-    vetorQuadrados[55]  =   quad56;
-    vetorQuadrados[56]  =   quad57;
-    vetorQuadrados[57]  =   quad58;
-    vetorQuadrados[58]  =   quad59;
-    vetorQuadrados[59]  =   quad60;
-    vetorQuadrados[60]  =   quad61;
-    vetorQuadrados[61]  =   quad62;
-    vetorQuadrados[62]  =   quad63;
-    vetorQuadrados[63]  =   quad64;
-    vetorQuadrados[64]  =   quad65;
-    vetorQuadrados[65]  =   quad66;
-    vetorQuadrados[66]  =   quad67;
-    vetorQuadrados[67]  =   quad68;
-    vetorQuadrados[68]  =   quad69;
-    vetorQuadrados[69]  =   quad70;
-    vetorQuadrados[70]  =   quad71;
-    vetorQuadrados[71]  =   quad72;
-    vetorQuadrados[72]  =   quad73;
-    vetorQuadrados[73]  =   quad74;
-    vetorQuadrados[74]  =   quad75;
-    vetorQuadrados[75]  =   quad76;
-    vetorQuadrados[76]  =   quad77;
-    vetorQuadrados[77]  =   quad78;
+    vetorQuadrados[1] = quad2;
+    vetorQuadrados[2] = quad3;
+    vetorQuadrados[3] = quad4;
+    vetorQuadrados[4] = quad5;
+    vetorQuadrados[5] = quad6;
+    vetorQuadrados[6] = quad7;
+    vetorQuadrados[7] = quad8;
+    vetorQuadrados[8] = quad9;
+    vetorQuadrados[9] = quad10;
+    vetorQuadrados[10] = quad11;
+    vetorQuadrados[11] = quad12;
+    vetorQuadrados[12] = quad13;
+    vetorQuadrados[13] = quad14;
+    vetorQuadrados[14] = quad15;
+    vetorQuadrados[15] = quad16;
+    vetorQuadrados[16] = quad17;
+    vetorQuadrados[17] = quad18;
+    vetorQuadrados[18] = quad19;
+    vetorQuadrados[19] = quad20;
+    vetorQuadrados[20] = quad21;
+    vetorQuadrados[21] = quad22;
+    vetorQuadrados[22] = quad23;
+    vetorQuadrados[23] = quad24;
+    vetorQuadrados[24] = quad25;
+    vetorQuadrados[25] = quad26;
+    vetorQuadrados[26] = quad27;
+    vetorQuadrados[27] = quad28;
+    vetorQuadrados[28] = quad29;
+    vetorQuadrados[29] = quad30;
+    vetorQuadrados[30] = quad31;
+    vetorQuadrados[31] = quad32;
+    vetorQuadrados[32] = quad33;
+    vetorQuadrados[33] = quad34;
+    vetorQuadrados[34] = quad35;
+    vetorQuadrados[35] = quad36;
+    vetorQuadrados[36] = quad37;
+    vetorQuadrados[37] = quad38;
+    vetorQuadrados[38] = quad39;
+    vetorQuadrados[39] = quad40;
+    vetorQuadrados[40] = quad41;
+    vetorQuadrados[41] = quad42;
+    vetorQuadrados[42] = quad43;
+    vetorQuadrados[43] = quad44;
+    vetorQuadrados[44] = quad45;
+    vetorQuadrados[45] = quad46;
+    vetorQuadrados[46] = quad47;
+    vetorQuadrados[47] = quad48;
+    vetorQuadrados[48] = quad49;
+    vetorQuadrados[49] = quad50;
+    vetorQuadrados[50] = quad51;
+    vetorQuadrados[51] = quad52;
+    vetorQuadrados[52] = quad53;
+    vetorQuadrados[53] = quad54;
+    vetorQuadrados[54] = quad55;
+    vetorQuadrados[55] = quad56;
+    vetorQuadrados[56] = quad57;
+    vetorQuadrados[57] = quad58;
+    vetorQuadrados[58] = quad59;
+    vetorQuadrados[59] = quad60;
+    vetorQuadrados[60] = quad61;
+    vetorQuadrados[61] = quad62;
+    vetorQuadrados[62] = quad63;
+    vetorQuadrados[63] = quad64;
+    vetorQuadrados[64] = quad65;
+    vetorQuadrados[65] = quad66;
+    vetorQuadrados[66] = quad67;
+    vetorQuadrados[67] = quad68;
+    vetorQuadrados[68] = quad69;
+    vetorQuadrados[69] = quad70;
+    vetorQuadrados[70] = quad71;
+    vetorQuadrados[71] = quad72;
+    vetorQuadrados[72] = quad73;
+    vetorQuadrados[73] = quad74;
+    vetorQuadrados[74] = quad75;
+    vetorQuadrados[75] = quad76;
+    vetorQuadrados[76] = quad77;
+    vetorQuadrados[77] = quad78;
 
-    for (int i = 0; i < 78; i++){
+    for (int i = 0; i < 78; i++)
+    {
         vetorQuadrados[i].setStatus(true);
     }
 }
 
-void mapa(){
+void mapa()
+{
 
     glClear(GL_COLOR_BUFFER_BIT);
 
     glColor4f(0.0, 0.0, 1.0, 0.5);
 
-    for (int i = 0; i < 12; i++){
-        glRecti(vetorParedes[i].getPositionX1(), vetorParedes[i].getPositionY1(), vetorParedes[i].getPositionX3(), vetorParedes[i].getPositionY3());  
+    for (int i = 0; i < 12; i++)
+    {
+        glRecti(vetorParedes[i].getPositionX1(), vetorParedes[i].getPositionY1(), vetorParedes[i].getPositionX3(), vetorParedes[i].getPositionY3());
 
         glEnd();
         glFlush();
     }
 
     //glRecti(100, 200, 30, 40);
-
 }
 
-void quadradosPontos(){
+void quadradosPontos()
+{
 
     glColor4f(1.0, 1.0, 1.0, 0.5);
 
-    for (int i=0; i<78; i++){
+    for (int i = 0; i < 78; i++)
+    {
 
-        if (vetorQuadrados[i].getStatus()){
+        if (vetorQuadrados[i].getStatus())
+        {
             glBegin(GL_POLYGON);
 
             glVertex2i(vetorQuadrados[i].getPositionX1(), vetorQuadrados[i].getPositionY1());
@@ -1804,12 +1873,11 @@ void quadradosPontos(){
             glEnd();
             glFlush();
         }
-        
     }
-
 }
 
-void pacman(){
+void pacman()
+{
 
     // glPushMatrix();
     // glTranslated(spin, 0, 0);
@@ -1824,10 +1892,14 @@ void pacman(){
     glLoadIdentity();
     glColor3f(1, 1, 0);
     glBegin(GL_QUADS);
-    glTexCoord3f(0, 0, 0);    glVertex3f(c_x, c_y, 0);
-    glTexCoord3f(0, 1, 0);    glVertex3f(c_x, c_y+80, 0);
-    glTexCoord3f(1, 1, 0);    glVertex3f(c_x+80, c_y+80, 0);
-    glTexCoord3f(1, 0, 0);    glVertex3f(c_x+80, c_y, 0);
+    glTexCoord3f(0, 0, 0);
+    glVertex3f(c_x, c_y, 0);
+    glTexCoord3f(0, 1, 0);
+    glVertex3f(c_x, c_y + 80, 0);
+    glTexCoord3f(1, 1, 0);
+    glVertex3f(c_x + 80, c_y + 80, 0);
+    glTexCoord3f(1, 0, 0);
+    glVertex3f(c_x + 80, c_y, 0);
     glEnd(); // angulo += velocidade;
     glDisable(GL_TEXTURE_2D);
 
@@ -1840,13 +1912,16 @@ void pacman(){
     glLoadIdentity();
     glColor3f(1, 1, 1);
     glBegin(GL_QUADS);
-    glTexCoord3f(0, 0, 0);    glVertex3f(cv_X, cv_Y, 0);
-    glTexCoord3f(0, 1, 0);    glVertex3f(cv_X, cv_Y+80, 0);
-    glTexCoord3f(1, 1, 0);    glVertex3f(cv_X+80, cv_Y+80, 0);
-    glTexCoord3f(1, 0, 0);    glVertex3f(cv_X+80, cv_Y, 0);
+    glTexCoord3f(0, 0, 0);
+    glVertex3f(percursoVilaoX[indice_vilao], percursoVilaoY[indice_vilao], 0);
+    glTexCoord3f(0, 1, 0);
+    glVertex3f(percursoVilaoX[indice_vilao], percursoVilaoY[indice_vilao] + 80, 0);
+    glTexCoord3f(1, 1, 0);
+    glVertex3f(percursoVilaoX[indice_vilao] + 80, percursoVilaoY[indice_vilao] + 80, 0);
+    glTexCoord3f(1, 0, 0);
+    glVertex3f(percursoVilaoX[indice_vilao] + 80, percursoVilaoY[indice_vilao], 0);
     glEnd(); // angulo += velocidade;
     glDisable(GL_TEXTURE_2D);
-
 }
 
 // void spinDisplay(){
@@ -1857,98 +1932,100 @@ void pacman(){
 //     glutPostRedisplay();
 // }
 
-void mapa2(){
+void mapa2()
+{
     glClear(GL_COLOR_BUFFER_BIT);
 
     glColor4f(0.0, 0.0, 1.0, 0.5);
 
     glBegin(GL_POLYGON);
-    glVertex2i(0,0);
-    glVertex2i(1600,0);
-    glVertex2i(1600,20);
-    glVertex2i(0,20);
-    glVertex2i(0,0);
+    glVertex2i(0, 0);
+    glVertex2i(1600, 0);
+    glVertex2i(1600, 20);
+    glVertex2i(0, 20);
+    glVertex2i(0, 0);
 
     glEnd();
     glFlush();
 
     glBegin(GL_POLYGON);
-    glVertex2i(0,20);
-    glVertex2i(0,800);
-    glVertex2i(20,800);
-    glVertex2i(20,0);
-    glVertex2i(0,20);
+    glVertex2i(0, 20);
+    glVertex2i(0, 800);
+    glVertex2i(20, 800);
+    glVertex2i(20, 0);
+    glVertex2i(0, 20);
 
     glEnd();
     glFlush();
 
     glBegin(GL_POLYGON);
-    glVertex2i(1580,0);
-    glVertex2i(1600,0);
-    glVertex2i(1600,800);
-    glVertex2i(1580,800);
-    glVertex2i(1580,0);
+    glVertex2i(1580, 0);
+    glVertex2i(1600, 0);
+    glVertex2i(1600, 800);
+    glVertex2i(1580, 800);
+    glVertex2i(1580, 0);
 
     glEnd();
     glFlush();
 
     glBegin(GL_POLYGON);
-    glVertex2i(0,780);
-    glVertex2i(1600,780);
-    glVertex2i(1600,800);
-    glVertex2i(0,800);
-    glVertex2i(0,780);
+    glVertex2i(0, 780);
+    glVertex2i(1600, 780);
+    glVertex2i(1600, 800);
+    glVertex2i(0, 800);
+    glVertex2i(0, 780);
 
     glEnd();
     glFlush();
 }
 
-void level(){
+void level()
+{
     glColor4f(1.0, 0.0, 0.0, 0.5);
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(100,600);
-    glVertex2i(100,300);
-    glVertex2i(300,300);
+    glVertex2i(100, 600);
+    glVertex2i(100, 300);
+    glVertex2i(300, 300);
 
     glEnd();
     glFlush();
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(500,500);
-    glVertex2i(400,500);
-    glVertex2i(400,400);
-    glVertex2i(500,400);
-    glVertex2i(400,400);
-    glVertex2i(400,300);
-    glVertex2i(500,300);
+    glVertex2i(500, 500);
+    glVertex2i(400, 500);
+    glVertex2i(400, 400);
+    glVertex2i(500, 400);
+    glVertex2i(400, 400);
+    glVertex2i(400, 300);
+    glVertex2i(500, 300);
 
     glEnd();
     glFlush();
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(600,500);
-    glVertex2i(700,300);
-    glVertex2i(800,500);
+    glVertex2i(600, 500);
+    glVertex2i(700, 300);
+    glVertex2i(800, 500);
 
     glEnd();
     glFlush();
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(1000,500);
-    glVertex2i(900,500);
-    glVertex2i(900,400);
-    glVertex2i(1000,400);
-    glVertex2i(900,400);
-    glVertex2i(900,300);
-    glVertex2i(1000,300);
+    glVertex2i(1000, 500);
+    glVertex2i(900, 500);
+    glVertex2i(900, 400);
+    glVertex2i(1000, 400);
+    glVertex2i(900, 400);
+    glVertex2i(900, 300);
+    glVertex2i(1000, 300);
 
     glEnd();
     glFlush();
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(1100,600);
-    glVertex2i(1100,300);
+    glVertex2i(1100, 600);
+    glVertex2i(1100, 300);
 
     glEnd();
     glFlush();
@@ -1956,195 +2033,237 @@ void level(){
     glColor4f(1.0, 1.0, 0.0, 0.5);
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(100,200);
-    glVertex2i(1500,200);
+    glVertex2i(100, 200);
+    glVertex2i(1500, 200);
 
     glEnd();
     glFlush();
 }
 
-void One(){
+void One()
+{
     glColor4f(1.0, 0.0, 0.0, 0.5);
 
     glBegin(GL_LINE_STRIP);
-    glVertex2i(1300,500);
-    glVertex2i(1400,600);
-    glVertex2i(1400,300);
-    glVertex2i(1300,300);
-    glVertex2i(1500,300);
+    glVertex2i(1300, 500);
+    glVertex2i(1400, 600);
+    glVertex2i(1400, 300);
+    glVertex2i(1300, 300);
+    glVertex2i(1500, 300);
 
     glEnd();
     glFlush();
-
 }
 
-
-void display(void){
+void display(void)
+{
     // colocaImagem();
     // pacman();
 
     // glDisable(GL_TEXTURE_2D);
     mapa();
-    quadradosPontos();    
+    quadradosPontos();
     pacman();
     glutSwapBuffers();
 }
 
-void keyboard(unsigned char key, int x, int y){
-    switch (key) {
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
 
-        case 27: exit(0); break;
-
-        }
-
+    case 27:
+        exit(0);
+        break;
+    }
 }
 
-void specialInputDoTeclado(int key, int x, int y) {
-    switch(key){
-        case GLUT_KEY_UP:
-            if(CIMA){
+void andarPacmanEVilao(int i)
+{
+    if (indice_vilao >= tamanho_vetor_vilao)
+    {
+        indice_vilao = 0;
+    }
 
-                if (colideVilao(c_x, c_y+5)){
-                    stopGame();
-                }
-
-                if (!wallColide(c_x, c_y+5)){
-                    c_y += 5;
-                    // glutIdleFunc(spinDisplay);
-                    comeuComida();
-                }
-
-               
-
-                glutPostRedisplay();
-            }
-
-            break;
-
-        case GLUT_KEY_DOWN:
-            if(BAIXO){
-
-                if (colideVilao(c_x, c_y-5)){
-                    stopGame();
-                }
-
-                bool colide = wallColide(c_x, c_y-5);
-                if (!colide){
-                   c_y -= 5;
-                //    glutIdleFunc(spinDisplay);
-                   comeuComida();
-                }
-
-                
-                // printf("colisão: %s ;Pacman andou  X : %i ;    Y : %i \n", colide ? "true" : "false", c_x, c_y);
-                glutPostRedisplay();
-            }
-            
-            break;
-    
-        case GLUT_KEY_LEFT:
-            if(LADO_ESQUERDO){
-                if (colideVilao(c_x-5, c_y)){
-                    stopGame();
-                }
-                if (!wallColide(c_x-5, c_y)){
-                    c_x -= 5;
-                    // glutIdleFunc(spinDisplay);
-                    comeuComida();
-                }
-                
-                glutPostRedisplay();
-            }
-            
-            break;
-    
-        case GLUT_KEY_RIGHT:
-            if(LADO_DIREITO){
-                if (colideVilao(c_x+5, c_y)){
-                    stopGame();
-                }
-                if (!wallColide(c_x+5, c_y)){
-                    c_x += 5;
-                    // glutIdleFunc(spinDisplay);
-                    comeuComida();
-                }
-                glutPostRedisplay();
-            }
-            
-            break;
+    if (BAIXO)
+    {
+        if (colideVilao(c_x, c_y - 5))
+        {
+            stopGame();
+        }
+        bool colide = wallColide(c_x, c_y - 5);
+        if (!colide)
+        {
+            c_y -= 5;
+            //    glutIdleFunc(spinDisplay);
+            comeuComida();
+        }
+        glutPostRedisplay();
+    }
+    else if (CIMA)
+    {
+        if (colideVilao(c_x, c_y + 5))
+        {
+            stopGame();
         }
 
+        if (!wallColide(c_x, c_y + 5))
+        {
+            c_y += 5;
+            comeuComida();
+        }
+
+        glutPostRedisplay();
+    }
+    else if (LADO_DIREITO)
+    {
+        if (colideVilao(c_x + 5, c_y))
+        {
+            stopGame();
+        }
+        if (!wallColide(c_x + 5, c_y))
+        {
+            c_x += 5;
+            // glutIdleFunc(spinDisplay);
+            comeuComida();
+        }
+
+        glutPostRedisplay();
+    }
+    else if (LADO_ESQUERDO)
+    {
+        if (colideVilao(c_x - 5, c_y))
+        {
+            stopGame();
+        }
+        if (!wallColide(c_x - 5, c_y))
+        {
+            c_x -= 5;
+            // glutIdleFunc(spinDisplay);
+            comeuComida();
+        }
+
+        glutPostRedisplay();
+    }
+    indice_vilao++;
+
+    glutTimerFunc(delay, andarPacmanEVilao, 1);
 }
 
-void reshape(int x, int y){
-    glViewport(0, 0, (GLsizei) x, (GLsizei) y);
+void specialInputDoTeclado(int key, int x, int y)
+{
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+
+        CIMA = true;
+        BAIXO = false;
+        LADO_DIREITO = false;
+        LADO_ESQUERDO = false;
+
+        break;
+
+    case GLUT_KEY_DOWN:
+
+        CIMA = false;
+        BAIXO = true;
+        LADO_DIREITO = false;
+        LADO_ESQUERDO = false;
+
+        break;
+
+    case GLUT_KEY_LEFT:
+
+        CIMA = false;
+        BAIXO = false;
+        LADO_DIREITO = false;
+        LADO_ESQUERDO = true;
+
+        break;
+
+    case GLUT_KEY_RIGHT:
+        CIMA = false;
+        BAIXO = false;
+        LADO_DIREITO = true;
+        LADO_ESQUERDO = false;
+
+        break;
+    }
+}
+
+void reshape(int x, int y)
+{
+    glViewport(0, 0, (GLsizei)x, (GLsizei)y);
     glMatrixMode(GL_PROJECTION);
     glOrtho(0, 1600, 0, 800, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
-void stopGame(){
-    CIMA                =   false;
-    BAIXO               =   false;
-    LADO_DIREITO        =   false;
-    LADO_ESQUERDO       =   false;
-    c_x                 =   200;
-    c_y                 =   680;
+void stopGame()
+{
+    CIMA = false;
+    BAIXO = false;
+    LADO_DIREITO = false;
+    LADO_ESQUERDO = false;
+    c_x = 200;
+    c_y = 680;
     // engine->play2D("pacman_chomp.wav",false);
 
-    for (int i = 0; i < 78; i++){
-    
+    for (int i = 0; i < 78; i++)
+    {
+
         vetorQuadrados[i].setStatus(true);
-    
     }
 
-    CIMA                =   true;
-    BAIXO               =   true;
-    LADO_DIREITO        =   true;
-    LADO_ESQUERDO       =   true;
-
-
+    CIMA = true;
+    BAIXO = true;
+    LADO_DIREITO = true;
+    LADO_ESQUERDO = true;
 }
 
+int viuDani()
+{
 
+    for (int i = 0; i < 10; i++)
+    {
 
-int viuDani(){
-
-    for(int i = 0; i<10; i++){
-
-        if(i==1){
+        if (i == 1)
+        {
             printf("%d", i);
             return i;
         }
-        if(i==2){
+        if (i == 2)
+        {
             printf("%d", i);
             return i;
         }
-        if(i==3){
+        if (i == 3)
+        {
             printf("%d", i);
             return i;
         }
-        if(i==4){
+        if (i == 4)
+        {
             printf("%d", i);
             return i;
         }
-        if(i==5){
+        if (i == 5)
+        {
             printf("%d", i);
             return i;
         }
-
     }
-
-
 }
 
-bool wallColide(int posicaoX, int posicaoY){
+bool wallColide(int posicaoX, int posicaoY)
+{
 
     int auxiliarCoordX = 0;
     int auxiliarCoordY = 0;
     bool col = false;
-    for (int i = 0; i < 13; i++){
+    for (int i = 0; i < 13; i++)
+    {
 
         auxiliarCoordX = vetorParedes[i].getPositionX1();
         auxiliarCoordY = vetorParedes[i].getPositionY1();
@@ -2152,18 +2271,19 @@ bool wallColide(int posicaoX, int posicaoY){
         // printf("auxX %d ", auxiliarCoordX);
         // printf("auxY %d\n", auxiliarCoordY);
 
-        bool colisaoEmX = posicaoX + 80 >= auxiliarCoordX && auxiliarCoordX + (vetorParedes[i].getPositionX3() - vetorParedes[i].getPositionX1())>= posicaoX;
-        bool colisaoEmY = posicaoY + 80 >= auxiliarCoordY && auxiliarCoordY + (vetorParedes[i].getPositionY3() - vetorParedes[i].getPositionY1())>= posicaoY;
+        bool colisaoEmX = posicaoX + 80 >= auxiliarCoordX && auxiliarCoordX + (vetorParedes[i].getPositionX3() - vetorParedes[i].getPositionX1()) >= posicaoX;
+        bool colisaoEmY = posicaoY + 80 >= auxiliarCoordY && auxiliarCoordY + (vetorParedes[i].getPositionY3() - vetorParedes[i].getPositionY1()) >= posicaoY;
 
-
-        if (colisaoEmX && colisaoEmY){
-            col= true;
+        if (colisaoEmX && colisaoEmY)
+        {
+            col = true;
         }
     }
     return col;
 }
 
-bool colideVilao(int posicaoX, int posicaoY){
+bool colideVilao(int posicaoX, int posicaoY)
+{
 
     int auxiliarCoordX = cv_X;
     int auxiliarCoordY = cv_Y;
@@ -2172,20 +2292,22 @@ bool colideVilao(int posicaoX, int posicaoY){
     bool colisaoEmX = posicaoX + 80 >= auxiliarCoordX && auxiliarCoordX + ((cv_X + 80) - cv_X) >= posicaoX;
     bool colisaoEmY = posicaoY + 80 >= auxiliarCoordY && auxiliarCoordY + ((cv_Y + 80) - cv_Y) >= posicaoY;
 
-    if (colisaoEmX && colisaoEmY){
+    if (colisaoEmX && colisaoEmY)
+    {
         colisao = true;
     }
 
     return colisao;
-    
 }
 
-void comeuComida(){
+void comeuComida()
+{
 
     int auxiliarCoordX = 0;
     int auxiliarCoordY = 0;
 
-    for (int i = 0; i < 78; i++){
+    for (int i = 0; i < 78; i++)
+    {
 
         auxiliarCoordX = vetorQuadrados[i].getPositionX1();
         auxiliarCoordY = vetorQuadrados[i].getPositionY1();
@@ -2193,12 +2315,13 @@ void comeuComida(){
         bool colisaoEmX = c_x + 80 >= auxiliarCoordX && auxiliarCoordX + (vetorQuadrados[i].getPositionX3() - vetorQuadrados[i].getPositionX1()) >= c_x;
         bool colisaoEmY = c_y + 80 >= auxiliarCoordY && auxiliarCoordY + (vetorQuadrados[i].getPositionY3() - vetorQuadrados[i].getPositionY1()) >= c_y;
 
-        if (colisaoEmX && colisaoEmY){
+        if (colisaoEmX && colisaoEmY)
+        {
             vetorQuadrados[i].setStatus(false);
+            // engine->play2D("pacman_chomp.wav");
+            // Se vc quiser aqui vc toca o som ao comer a comida
         }
-
     }
-
 }
 
 char *carrega_bmp()
